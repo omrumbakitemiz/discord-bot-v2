@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, SlashCommandSubcommandBuilder, REST, Routes } from 'discord.js';
+import { SlashCommandBuilder, REST, Routes } from 'discord.js';
 import { CONFIG } from '../config';
 
 // Define slash commands

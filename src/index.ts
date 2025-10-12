@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Message, Interaction, CommandInteraction } from 'discord.js';
+import { Client, GatewayIntentBits, Message, Interaction, ChatInputCommandInteraction } from 'discord.js';
 import { CONFIG } from './config';
 import { commands } from './commands';
 import { MusicPlayer } from './utils/audioPlayer';
@@ -69,7 +69,7 @@ client.on('messageCreate', async (message: Message) => {
 
 // Handle slash command interactions
 client.on('interactionCreate', async (interaction: Interaction) => {
-  if (!interaction.isCommand()) return;
+  if (!interaction.isChatInputCommand()) return;
 
   const commandName = interaction.commandName;
   const member = interaction.member as any;
@@ -77,7 +77,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   try {
     switch (commandName) {
       case 'play': {
-        const url = interaction.options.get('url')?.value as string;
+        const url = interaction.options.getString('url');
         
         if (!member.voice.channel) {
           await interaction.reply('❌ You need to be in a voice channel to play music!');
@@ -131,14 +131,14 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       case 'skip': {
         const player = (global as any).musicPlayer as MusicPlayer;
         const result = player.skip();
-        await interaction.reply(result);
+        await interaction.reply(result || '⏭️ Skipped current song!');
         break;
       }
 
       case 'queue': {
         const player = (global as any).musicPlayer as MusicPlayer;
         const queue = player.getQueue();
-        await interaction.reply(queue);
+        await interaction.reply(queue || '📭 Queue is empty!');
         break;
       }
 
