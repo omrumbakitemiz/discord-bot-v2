@@ -1,4 +1,5 @@
-import ytdl from 'ytdl-core';
+import ytdl from '@distube/ytdl-core';
+import ytpl from 'ytpl';
 
 export class YouTubeDownloader {
   /**
@@ -13,7 +14,20 @@ export class YouTubeDownloader {
    */
   static async getVideoInfo(url: string) {
     try {
-      const info = await ytdl.getInfo(url);
+      let finalUrl = url;
+
+      if (ytpl.validateID(url)) {
+        const playlist = await ytpl(url, { limit: 1 });
+        const firstItem = playlist.items[0];
+
+        if (!firstItem?.shortUrl) {
+          throw new Error('Playlist does not contain any playable videos');
+        }
+
+        finalUrl = firstItem.shortUrl;
+      }
+
+      const info = await ytdl.getInfo(finalUrl);
       return {
         title: info.videoDetails.title,
         duration: info.videoDetails.lengthSeconds,
@@ -34,6 +48,12 @@ export class YouTubeDownloader {
       filter: 'audioonly',
       quality: 'highestaudio',
       highWaterMark: 1 << 25, // 32MB buffer
+      requestOptions: {
+        headers: {
+          'user-agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        },
+      },
     });
   }
 }
