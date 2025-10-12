@@ -1,11 +1,2 @@
 [phases.setup]
-nixPkgs = ["nodejs", "ffmpeg", "python3", "gcc", "gnumake", "pkg-config", "libopus"]
-
-[phases.install]
-cmds = ["npm install"]
-
-[phases.build]
-cmds = ["npm run build"]
-
-[start]
-cmd = "npm start"
+nixPkgs = ["nodejs_20", "ffmpeg", "python3", "gcc", "gnumake", "pkg-config", "libopus"]
