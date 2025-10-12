@@ -1,0 +1,35 @@
+# Use Node.js 20 as the base image for the builder
+FROM node:20 AS builder
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the application files
+COPY . /app
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Install dependencies using pnpm
+RUN pnpm install
+
+# Build the application
+RUN pnpm run build
+
+# Define the final stage for runtime
+FROM node:20
+
+# Install pnpm globally in the runtime stage
+RUN npm install -g pnpm
+
+# Set the working directory
+WORKDIR /app
+
+# Copy only the necessary build artifacts and dependencies from the builder stage
+COPY --from=builder /app /app
+
+# Install only production dependencies
+RUN pnpm install --prod
+
+# Command to start the application
+ENTRYPOINT ["pnpm", "run", "start-prod"]
