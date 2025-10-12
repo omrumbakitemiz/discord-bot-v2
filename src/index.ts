@@ -77,26 +77,24 @@ client.on('interactionCreate', async (interaction: Interaction) => {
   try {
     switch (commandName) {
       case 'play': {
-        const url = interaction.options.getString('url');
-        
-        if (!member.voice.channel) {
-          await interaction.reply('❌ You need to be in a voice channel to play music!');
-          return;
-        }
+        await interaction.deferReply();
 
-        if (!url) {
-          await interaction.reply('❌ Please provide a YouTube URL!');
+        const url = interaction.options.getString('url', true);
+        const voiceChannel = member.voice?.channel;
+
+        if (!voiceChannel) {
+          await interaction.editReply('❌ You need to be in a voice channel to play music!');
           return;
         }
 
         const player = (global as any).musicPlayer as MusicPlayer;
-        
+
         if (!player.getConnection()) {
-          await interaction.reply('🔄 Joining voice channel...');
-          await player.joinChannel(member.voice.channel);
+          await interaction.editReply('🔄 Joining voice channel...');
+          await player.joinChannel(voiceChannel);
         }
 
-        await interaction.reply('🔄 Loading song...');
+        await interaction.editReply('🔄 Loading song...');
         const result = await player.addToQueue(url, interaction.user.tag);
         await interaction.followUp(`🎵 ${result}`);
         break;
@@ -180,7 +178,12 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     }
   } catch (error) {
     console.error(`Error handling slash command ${commandName}:`, error);
-    await interaction.reply('❌ There was an error executing that command.');
+
+    if (interaction.deferred || interaction.replied) {
+      await interaction.followUp({ content: '❌ There was an error executing that command.', ephemeral: true });
+    } else {
+      await interaction.reply({ content: '❌ There was an error executing that command.', ephemeral: true });
+    }
   }
 });
 
