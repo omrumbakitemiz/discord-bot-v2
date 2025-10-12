@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Message, Interaction, ChatInputCommandInteraction } from 'discord.js';
+import { Client, GatewayIntentBits, Message, Interaction } from 'discord.js';
 import { CONFIG } from './config';
 import { commands } from './commands';
 import { MusicPlayer } from './utils/audioPlayer';
@@ -130,15 +130,23 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
       case 'skip': {
         const player = (global as any).musicPlayer as MusicPlayer;
-        const result = player.skip();
-        await interaction.reply(result || '⏭️ Skipped current song!');
+        player.skip();
+        await interaction.reply('⏭️ Skipped current song!');
         break;
       }
 
       case 'queue': {
         const player = (global as any).musicPlayer as MusicPlayer;
         const queue = player.getQueue();
-        await interaction.reply(queue || '📭 Queue is empty!');
+        
+        if (queue.length === 0) {
+          await interaction.reply('📭 Queue is empty!');
+        } else {
+          const queueText = queue.map((item, index) => 
+            `${index + 1}. **${item.title}** (requested by ${item.requestedBy})`
+          ).join('\n');
+          await interaction.reply(`🎵 **Current Queue:**\n\n${queueText}`);
+        }
         break;
       }
 
