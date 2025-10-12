@@ -1,0 +1,28 @@
+# Railway ignore file
+# Similar to .gitignore but specifically for Railway deployments
+
+# Development files
+node_modules/
+src/
+*.ts
+!dist/**
+
+# Documentation
+*.md
+!README.md
+
+# IDE
+.vscode/
+.idea/
+
+# Tests
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Logs
+*.log
+
+# Environment (Railway will use its own env vars)
+.env.example
