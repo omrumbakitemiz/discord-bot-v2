@@ -1,6 +1,18 @@
 # Quick Setup Guide
 
-## Step-by-Step Setup
+## Choose Your Setup Method
+
+### 🚀 Option 1: Deploy to Railway (Recommended for 24/7 hosting)
+
+**Fastest way to get your bot online:**
+1. See [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for complete Railway deployment guide
+2. Railway provides free hosting with $5 monthly credit
+3. Automatic builds and deployments from GitHub
+4. FFmpeg pre-installed, no manual setup needed
+
+### 💻 Option 2: Run Locally (Development)
+
+## Step-by-Step Local Setup
 
 ### 1. Install Dependencies
 ```bash
@@ -150,5 +162,17 @@ You can extend this bot by:
 - Implementing song duration limits
 - Adding lyrics fetching
 - Creating auto-disconnect on idle
+
+## Deploy to Production
+
+For 24/7 hosting, see [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for Railway deployment.
+
+**Why Railway?**
+- ✅ Free tier with $5 monthly credit
+- ✅ Zero configuration needed
+- ✅ FFmpeg pre-installed
+- ✅ Automatic deployments from GitHub
+- ✅ Built-in monitoring and logs
+- ✅ 5 minute setup time
 
 Happy coding! 🎵

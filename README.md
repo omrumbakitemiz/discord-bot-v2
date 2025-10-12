@@ -11,10 +11,19 @@ A feature-rich Discord bot built with TypeScript and Node.js that can stream You
 - ⏭️ **Playback Controls** - Skip, stop, and manage audio playback
 - 🎨 **Rich Embeds** - Beautiful embedded messages for queue and help commands
 
-## Prerequisites
+## Quick Deploy
 
-Before running this bot, make sure you have:
+### 🚀 Deploy to Railway (Recommended)
 
+Deploy this bot to Railway in just a few clicks:
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
+
+See [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for detailed deployment instructions.
+
+### 💻 Run Locally
+
+Prerequisites:
 - **Node.js** (v16.0.0 or higher)
 - **npm** or **yarn** package manager
 - A **Discord Bot Token** (see setup instructions below)
@@ -72,6 +81,26 @@ https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=31
 ```
 
 Replace `YOUR_CLIENT_ID` with your actual client ID.
+
+## Deployment
+
+### Railway (Recommended for 24/7 hosting)
+
+Deploy to Railway for free hosting with automatic builds:
+
+1. **Push to GitHub**
+2. **Connect to Railway**
+3. **Set environment variables**
+4. **Deploy!**
+
+📖 See [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for complete guide.
+
+**Railway includes:**
+- ✅ Free $5 credit per month
+- ✅ Automatic deployments from GitHub
+- ✅ FFmpeg pre-installed
+- ✅ Built-in monitoring and logs
+- ✅ Zero configuration needed
 
 ## Usage
 
@@ -180,11 +209,31 @@ discord-youtube-bot/
 - Verify the voice channel isn't full
 - Check if the voice channel has any restrictions
 
+## Deployment Options
+
+| Method | Best For | Cost | Setup Time |
+|--------|----------|------|------------|
+| **Railway** | 24/7 hosting | Free tier available | 5 minutes |
+| Local | Development | Free | 2 minutes |
+| VPS | Full control | $5+/month | 15 minutes |
+| Docker | Containerized | Varies | 10 minutes |
+
 ## Notes
 
 - The bot requires a stable internet connection for streaming YouTube audio
 - Some YouTube videos may not be available for streaming due to regional restrictions
 - The bot uses a queue system, so multiple songs can be added and played sequentially
+- For 24/7 hosting, we recommend deploying to Railway (see [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md))
+
+## Project Files
+
+- `README.md` - This file (overview and local setup)
+- `SETUP_GUIDE.md` - Quick setup instructions
+- `RAILWAY_DEPLOYMENT.md` - Railway deployment guide
+- `PROJECT_SUMMARY.md` - Complete project breakdown
+- `railway.json` - Railway configuration
+- `nixpacks.toml` - Build configuration with FFmpeg
+- `Procfile` - Process definition
 
 ## License
 

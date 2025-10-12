@@ -4,6 +4,17 @@
 
 I've built a fully functional Discord bot with YouTube audio streaming capabilities using **TypeScript** and **Node.js** with industry best practices.
 
+## 🚀 NEW: Railway Deployment Support Added!
+
+The project is now **fully configured for Railway deployment** with:
+- ✅ One-click deployment from GitHub
+- ✅ FFmpeg pre-installed for audio streaming
+- ✅ Auto-restart on failure
+- ✅ Free tier hosting ($5 monthly credit)
+- ✅ Complete deployment documentation
+
+**See [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for deployment guide.**
+
 ## 🎯 Features Implemented
 
 ### ✅ Discord Commands
