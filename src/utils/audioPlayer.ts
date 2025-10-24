@@ -8,6 +8,7 @@ import {
   VoiceConnectionStatus,
   entersState,
 } from '@discordjs/voice';
+import { createReadStream } from 'fs';
 import { VoiceBasedChannel } from 'discord.js';
 import { YouTubeDownloader } from './youtubeDownloader';
 import { AudioQueueItem } from '../types';
@@ -16,6 +17,7 @@ export class MusicPlayer {
   private player: AudioPlayer;
   private connection: VoiceConnection | null = null;
   private queue: AudioQueueItem[] = [];
+  private currentItem: AudioQueueItem | null = null;
   private isPlaying: boolean = false;
 
   constructor() {
@@ -27,10 +29,11 @@ export class MusicPlayer {
    * Setup event listeners for the audio player
    */
   private setupPlayerListeners(): void {
-    this.player.on(AudioPlayerStatus.Idle, () => {
+    this.player.on(AudioPlayerStatus.Idle, async () => {
       console.log('Player is idle, playing next in queue...');
       this.isPlaying = false;
-      this.playNext();
+      await this.cleanupCurrentItem();
+      void this.playNext();
     });
 
     this.player.on(AudioPlayerStatus.Playing, () => {
@@ -38,10 +41,11 @@ export class MusicPlayer {
       this.isPlaying = true;
     });
 
-    this.player.on('error', (error) => {
+    this.player.on('error', async (error) => {
       console.error('Audio player error:', error);
       this.isPlaying = false;
-      this.playNext();
+      await this.cleanupCurrentItem();
+      void this.playNext();
     });
   }
 
@@ -79,19 +83,23 @@ export class MusicPlayer {
       throw new Error('Invalid YouTube URL');
     }
 
-    const videoInfo = await YouTubeDownloader.getVideoInfo(url);
-    
-    this.queue.push({
-      url,
-      title: videoInfo.title,
+    const download = await YouTubeDownloader.downloadAudio(url);
+
+    const queueItem: AudioQueueItem = {
+      url: download.metadata.webpageUrl,
+      title: download.metadata.title,
       requestedBy,
-    });
+      tempFilePath: download.filePath,
+      cleanup: download.cleanup,
+    };
+
+    this.queue.push(queueItem);
 
     if (!this.isPlaying) {
-      this.playNext();
-      return `Now playing: **${videoInfo.title}**`;
+      void this.playNext();
+      return `Now playing: **${download.metadata.title}**`;
     } else {
-      return `Added to queue: **${videoInfo.title}** (Position: ${this.queue.length})`;
+      return `Added to queue: **${download.metadata.title}** (Position: ${this.queue.length})`;
     }
   }
 
@@ -105,17 +113,21 @@ export class MusicPlayer {
     }
 
     const song = this.queue.shift();
-    if (!song) return;
+    if (!song) {
+      return;
+    }
 
     try {
-      const stream = YouTubeDownloader.createAudioStream(song.url);
-      const resource = createAudioResource(stream);
-      
+      const resource = createAudioResource(createReadStream(song.tempFilePath));
+
+      this.currentItem = song;
       this.player.play(resource);
       console.log(`Now playing: ${song.title}`);
     } catch (error) {
       console.error('Error playing song:', error);
-      this.playNext(); // Try to play the next song
+      await this.cleanupItem(song);
+      this.currentItem = null;
+      void this.playNext(); // Try to play the next song
     }
   }
 
@@ -123,9 +135,12 @@ export class MusicPlayer {
    * Stop playing and clear the queue
    */
   stop(): void {
+    const itemsToCleanup = [...this.queue];
     this.queue = [];
     this.player.stop();
     this.isPlaying = false;
+    void this.cleanupCurrentItem();
+    void Promise.all(itemsToCleanup.map((item) => this.cleanupItem(item)));
   }
 
   /**
@@ -165,5 +180,22 @@ export class MusicPlayer {
    */
   getConnection(): VoiceConnection | null {
     return this.connection;
+  }
+
+  private async cleanupCurrentItem(): Promise<void> {
+    if (!this.currentItem) {
+      return;
+    }
+
+    await this.cleanupItem(this.currentItem);
+    this.currentItem = null;
+  }
+
+  private async cleanupItem(item: AudioQueueItem): Promise<void> {
+    try {
+      await item.cleanup();
+    } catch (error) {
+      console.error('Failed to clean up audio queue item:', error);
+    }
   }
 }

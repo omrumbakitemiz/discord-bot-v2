@@ -95,8 +95,18 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         }
 
         await interaction.editReply('🔄 Loading song...');
-        const result = await player.addToQueue(url, interaction.user.tag);
-        await interaction.followUp(`🎵 ${result}`);
+        try {
+          const result = await player.addToQueue(url, interaction.user.tag);
+          await interaction.followUp(`🎵 ${result}`);
+        } catch (error) {
+          console.error('Error adding song via slash command:', error);
+          const message =
+            error instanceof Error ? error.message : 'Unknown error occurred while queuing the song';
+          await interaction.followUp({
+            content: `❌ Failed to play the song: ${message}`,
+            ephemeral: true,
+          });
+        }
         break;
       }
 

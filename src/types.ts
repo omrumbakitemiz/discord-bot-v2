@@ -11,4 +11,6 @@ export interface AudioQueueItem {
   url: string;
   title: string;
   requestedBy: string;
+  tempFilePath: string;
+  cleanup: () => Promise<void>;
 }
